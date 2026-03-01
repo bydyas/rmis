@@ -1,0 +1,9 @@
+{
+    "auth": {
+        "invalid_credentials": "Invalid credentials",
+        "users_exist": "User already exists"
+    },
+    "users": {
+        "user_not_found": "User not found"
+    }
+}

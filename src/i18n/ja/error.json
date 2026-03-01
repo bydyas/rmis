@@ -1,0 +1,9 @@
+{
+    "auth": {
+        "invalid_credentials": "認証情報が無効です",
+        "users_exist": "ユーザーはすでに存在します"
+    },
+    "users": {
+        "user_not_found": "ユーザーが見つかりません"
+    }
+}

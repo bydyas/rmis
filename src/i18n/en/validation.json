@@ -1,0 +1,5 @@
+{
+  "INVALID_EMAIL": "Email is invalid",
+  "INVALID_STRING": "The value is not a string",
+  "MIN": "The value needs to be at least {constraints.0}, ow and {message}"
+}

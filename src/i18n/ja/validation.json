@@ -1,0 +1,5 @@
+{
+  "INVALID_EMAIL": "メールアドレスが無効です",
+  "INVALID_STRING": "値は文字列である必要があります",
+  "MIN": "値は{constraints.0}文字以上である必要があります"
+}
