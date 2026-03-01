@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { validationSchema } from './config/validation.config';
 import databaseConfig from './config/db.config';
 import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
 import {
   AcceptLanguageResolver,
   CookieResolver,
@@ -13,6 +12,7 @@ import {
   QueryResolver,
 } from 'nestjs-i18n';
 import { join } from 'path';
+import { SessionsModule } from './sessions/sessions.module';
 
 @Module({
   imports: [
@@ -45,7 +45,7 @@ import { join } from 'path';
       inject: [ConfigService],
     }),
     UsersModule,
-    AuthModule,
+    SessionsModule,
   ],
   controllers: [],
   providers: [],

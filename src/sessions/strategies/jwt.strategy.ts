@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { FastifyRequest } from 'fastify';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ISessionToken } from '../sessions.type';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -18,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: { sub: number }) {
+  validate(payload: ISessionToken) {
     return { id: payload.sub };
   }
 }

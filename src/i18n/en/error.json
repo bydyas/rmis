@@ -1,7 +1,7 @@
 {
-    "auth": {
+    "sessions": {
         "invalid_credentials": "Invalid credentials",
-        "users_exist": "User already exists"
+        "user_exists": "User already exists"
     },
     "users": {
         "user_not_found": "User not found"

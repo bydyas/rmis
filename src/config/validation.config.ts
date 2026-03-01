@@ -24,14 +24,6 @@ export const validationSchema = Joi.object({
   DB_DATABASE: Joi.string().required(),
 
   JWT_SECRET: Joi.string().required(),
-  JWT_EXPIRATION: Joi.string().required(),
-
-  ACCESS_TOKEN_NAME: Joi.string()
-    .valid('access-token', '__Host-Http-access-token')
-    .required(),
-  COOKIE_HTTP_ONLY: Joi.boolean().required(),
-  COOKIE_PATH: Joi.string().required(),
-  COOKIE_SAME_SITE: Joi.string().valid('strict', 'lax', 'none').required(),
-  COOKIE_SECURE: Joi.boolean().required(),
-  COOKIE_MAX_AGE: Joi.number().integer().positive().required(),
+  ACCESS_TOKEN_EXPIRATION: Joi.string().required(),
+  REFRESH_TOKEN_EXPIRATION: Joi.string().required(),
 });
