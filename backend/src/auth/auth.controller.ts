@@ -14,19 +14,22 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyReply } from 'fastify';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { SessionsService } from './sessions.service';
+import { Environment, TEnvironment } from '../config/types.config';
 import { LoginDto } from './dto/login.dto';
-import { Environment, TEnvironment } from 'src/config/types.config';
+import { AuthService } from './auth.service';
+import { IAuthBody } from './auth.type';
+import ms from 'ms';
+import type { StringValue } from 'ms';
 
-@ApiTags('Session')
-@Controller('sessions')
-export class SessionsController {
+@ApiTags('Auth')
+@Controller('auth')
+export class AuthController {
   private readonly isDevelopment: boolean;
 
   constructor(
-    private readonly sessionsService: SessionsService,
+    private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {
     this.isDevelopment =
@@ -35,7 +38,8 @@ export class SessionsController {
   }
 
   private get cookieSessionIdName() {
-    return this.isDevelopment ? 'session-id' : `__Host-Http-session-id`;
+    const base = 'refresh_token';
+    return this.isDevelopment ? base : `__Host-Http-${base}`;
   }
 
   private get cookieOptions() {
@@ -44,6 +48,9 @@ export class SessionsController {
       path: '/',
       sameSite: (this.isDevelopment ? 'none' : 'strict') as 'strict' | 'none',
       secure: !this.isDevelopment,
+      maxAge: ms(
+        this.configService.get<StringValue>('REFRESH_TOKEN_EXPIRATION')!,
+      ),
     };
   }
 
@@ -60,15 +67,12 @@ export class SessionsController {
   })
   async register(
     @Body() createUserDto: CreateUserDto,
-    @Req() req: FastifyRequest,
     @Res({ passthrough: true }) res: FastifyReply,
-  ): Promise<string> {
-    const result = await this.sessionsService.register(createUserDto, req);
-    res.setCookie(this.cookieSessionIdName, result.sessionId, {
-      ...this.cookieOptions,
-      maxAge: result.expires,
-    });
-    return result.accessToken;
+  ): Promise<IAuthBody> {
+    const { accessToken, refreshToken } =
+      await this.authService.register(createUserDto);
+    res.setCookie(this.cookieSessionIdName, refreshToken, this.cookieOptions);
+    return { accessToken };
   }
 
   @Post('login')
@@ -84,15 +88,12 @@ export class SessionsController {
   })
   async login(
     @Body() loginDto: LoginDto,
-    @Req() req: FastifyRequest,
     @Res({ passthrough: true }) res: FastifyReply,
-  ): Promise<string> {
-    const result = await this.sessionsService.login(loginDto, req);
-    res.setCookie(this.cookieSessionIdName, result.sessionId, {
-      ...this.cookieOptions,
-      maxAge: result.expires,
-    });
-    return result.accessToken;
+  ): Promise<IAuthBody> {
+    const { accessToken, refreshToken } =
+      await this.authService.login(loginDto);
+    res.setCookie(this.cookieSessionIdName, refreshToken, this.cookieOptions);
+    return { accessToken };
   }
 
   @Post('logout')
@@ -100,14 +101,7 @@ export class SessionsController {
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Log out and clear the access token cookie' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Logged out' })
-  async logout(
-    @Req() req: FastifyRequest,
-    @Res({ passthrough: true }) res: FastifyReply,
-  ) {
-    const sessionId = req.cookies[this.cookieSessionIdName];
-    if (sessionId) {
-      await this.sessionsService.invalidate(sessionId);
-    }
+  async logout(@Res({ passthrough: true }) res: FastifyReply) {
     res.clearCookie(this.cookieSessionIdName);
   }
 }

@@ -16,11 +16,7 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async get(options: FindOneOptions<User>): Promise<User | never> {
-    const user = await this.usersRepository.findOne(options);
-    if (!user) {
-      throw new BadRequestException('users.user_not_found');
-    }
-    return user;
+  async get(options: FindOneOptions<User>): Promise<User | null> {
+    return this.usersRepository.findOne(options);
   }
 }

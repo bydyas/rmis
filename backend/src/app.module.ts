@@ -12,7 +12,7 @@ import {
   QueryResolver,
 } from 'nestjs-i18n';
 import { join } from 'path';
-import { SessionsModule } from './sessions/sessions.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -45,7 +45,7 @@ import { SessionsModule } from './sessions/sessions.module';
       inject: [ConfigService],
     }),
     UsersModule,
-    SessionsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

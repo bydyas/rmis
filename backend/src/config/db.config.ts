@@ -5,6 +5,7 @@ import { config as dotenvConfig } from 'dotenv';
 dotenvConfig();
 
 const configService = new ConfigService();
+const isDev = configService.get<string>('NODE_ENV') === 'development';
 
 const databaseConfig = {
   type: 'postgres',
@@ -16,8 +17,8 @@ const databaseConfig = {
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   migrations: [__dirname + '/../../migrations/*{.ts,.js}'],
   migrationsRun: false,
-  synchronize: true,
-  logging: true,
+  synchronize: isDev,
+  logging: isDev,
 } as DataSourceOptions;
 
 export const connectionSource = new DataSource(databaseConfig);
