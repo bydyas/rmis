@@ -6,6 +6,7 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -14,7 +15,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import type { FastifyReply } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { Environment, TEnvironment } from '../config/types.config';
 import { LoginDto } from './dto/login.dto';
@@ -101,7 +102,33 @@ export class AuthController {
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Log out and clear the access token cookie' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Logged out' })
-  async logout(@Res({ passthrough: true }) res: FastifyReply) {
+  async logout(
+    @Req() req: FastifyRequest,
+    @Res({ passthrough: true }) res: FastifyReply,
+  ) {
+    const accessToken = req['headers']['authorization']?.split(' ')[1];
+
+    if (!accessToken) {
+      throw new UnauthorizedException('sessions.invalid_token');
+    }
+
     res.clearCookie(this.cookieSessionIdName);
+    return this.authService.logout(accessToken);
+  }
+
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiCookieAuth()
+  @ApiOperation({ summary: 'Refresh the access token' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Access token refreshed' })
+  async refresh(@Req() req: FastifyRequest) {
+    const accessToken = req['headers']['authorization']?.split(' ')[1];
+    const refreshToken = req.cookies[this.cookieSessionIdName];
+
+    if (!accessToken || !refreshToken) {
+      throw new UnauthorizedException('sessions.invalid_token');
+    }
+
+    return this.authService.refresh({ accessToken, refreshToken });
   }
 }
