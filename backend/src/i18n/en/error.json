@@ -1,4 +1,7 @@
 {
+    "common": {
+        "rate_limit_exceeded": "Too many requests, please try again later"
+    },
     "sessions": {
         "invalid_credentials": "Invalid credentials",
         "user_exists": "User already exists"

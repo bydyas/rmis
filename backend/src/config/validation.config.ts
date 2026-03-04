@@ -11,6 +11,9 @@ export const validationSchema = Joi.object({
   PREFIX: Joi.string().default('api'),
   FALLBACK_LANGUAGE: Joi.string().default('en'),
 
+  AUTH_RATE_TTL: Joi.string().default('1m'),
+  AUTH_RATE_LIMIT: Joi.number().default(3),
+
   SWAGGER_TITLE: Joi.string().default('rmis'),
   SWAGGER_DESCRIPTION: Joi.string().default(
     'Rider Medical Information System API description',

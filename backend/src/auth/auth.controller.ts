@@ -23,8 +23,10 @@ import { AuthService } from './auth.service';
 import { IAuthBody } from './auth.type';
 import ms from 'ms';
 import type { StringValue } from 'ms';
+import { SkipThrottle } from '@nestjs/throttler';
 
 @ApiTags('Auth')
+@SkipThrottle()
 @Controller('auth')
 export class AuthController {
   private readonly isDevelopment: boolean;
@@ -77,6 +79,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @SkipThrottle({ default: false })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Log in with email and password' })
   @ApiResponse({

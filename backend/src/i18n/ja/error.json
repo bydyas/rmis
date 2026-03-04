@@ -1,4 +1,7 @@
 {
+    "common": {
+        "rate_limit_exceeded": "リクエストが多すぎます。後で再度お試しください"
+    },
     "sessions": {
         "invalid_credentials": "認証情報が無効です",
         "user_exists": "ユーザーはすでに存在します"
